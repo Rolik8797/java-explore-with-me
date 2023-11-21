@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.mapper.StatsMapper;
+import ru.practicum.model.Application;
 import ru.practicum.model.Stats;
 
 
@@ -30,14 +31,17 @@ public class StatsServiceStorageTest {
 
     @Test
     void shouldSaveEndpointHit() {
+        Application application = new Application("ewm-main-service");
+        entityManager.persist(application);
+
         EndpointHit endpointHit = EndpointHit.builder()
-                .app("ewm-main-service")
+                .app(application.getAppName())
                 .uri("/events/1")
                 .ip("192.163.0.1")
                 .timestamp("2022-09-06 11:00:23")
                 .build();
 
-        statsStorage.save(StatsMapper.toStats(endpointHit));
+        statsStorage.save(StatsMapper.toStats(endpointHit, application));
 
         TypedQuery<Stats> queryForItem = entityManager.getEntityManager().createQuery(
                 "Select s from Stats s where s.id = :id",
@@ -46,7 +50,7 @@ public class StatsServiceStorageTest {
 
         assertThat(stats.getId(), notNullValue());
         assertThat(stats.getId(), is(1));
-        assertThat(stats.getApp(), equalTo(endpointHit.getApp()));
+        assertThat(stats.getApplication().getAppName(), equalTo(endpointHit.getApp()));
         assertThat(stats.getUri(), equalTo(endpointHit.getUri()));
         assertThat(stats.getIp(), equalTo(endpointHit.getIp()));
         assertThat(stats.getTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
@@ -55,39 +59,41 @@ public class StatsServiceStorageTest {
 
     @Test
     void shouldGetStats() {
+        Application application = new Application("ewm-main-service");
+        entityManager.persist(application);
 
         EndpointHit endpointHit1 = EndpointHit.builder()
-                .app("ewm-main-service")
+                .app(application.getAppName())
                 .uri("/events/1")
                 .ip("192.163.0.1")
                 .timestamp("2022-09-06 11:00:23")
                 .build();
 
         EndpointHit endpointHit2 = EndpointHit.builder()
-                .app("ewm-main-service")
+                .app(application.getAppName())
                 .uri("/events")
                 .ip("192.163.0.1")
                 .timestamp("2023-02-06 11:00:23")
                 .build();
 
         EndpointHit endpointHit3 = EndpointHit.builder()
-                .app("ewm-main-service")
+                .app(application.getAppName())
                 .uri("/events/1")
                 .ip("192.163.0.1")
                 .timestamp("2023-03-06 11:00:23")
                 .build();
 
         EndpointHit endpointHit4 = EndpointHit.builder()
-                .app("ewm-main-service")
+                .app(application.getAppName())
                 .uri("/events/1")
                 .ip("192.163.0.2")
                 .timestamp("2023-05-06 11:00:23")
                 .build();
 
-        statsStorage.save(StatsMapper.toStats(endpointHit1));
-        statsStorage.save(StatsMapper.toStats(endpointHit2));
-        statsStorage.save(StatsMapper.toStats(endpointHit3));
-        statsStorage.save(StatsMapper.toStats(endpointHit4));
+        statsStorage.save(StatsMapper.toStats(endpointHit1, application));
+        statsStorage.save(StatsMapper.toStats(endpointHit2, application));
+        statsStorage.save(StatsMapper.toStats(endpointHit3, application));
+        statsStorage.save(StatsMapper.toStats(endpointHit4, application));
 
         String[] uris1 = new String[]{"/events/1"};
         String[] uris2 = new String[]{"/events", "/events/1"};

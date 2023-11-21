@@ -11,45 +11,45 @@ import java.util.List;
 
 public interface StatsStorage extends JpaRepository<Stats, Integer> {
 
-    @Query("select new ru.practicum.ViewStats(s.app, s.uri, count(s.ip))" +
-            " from Stats as s" +
-            " where s.timestamp >= :start" +
-            " and s.timestamp <= :end" +
-            " group by s.app, s.uri" +
-            " order by count(s.ip) desc")
+    @Query("SELECT new ru.practicum.ViewStats(s.application.appName, s.uri, COUNT(s.ip))" +
+            " FROM Stats s" +
+            " WHERE s.timestamp >= :start" +
+            " AND s.timestamp <= :end" +
+            " GROUP BY s.application.appName, s.uri" +
+            " ORDER BY COUNT(s.ip) DESC")
     List<ViewStats> findStatsAll(@Param("start") LocalDateTime start,
                                  @Param("end") LocalDateTime end);
 
-    @Query("select new ru.practicum.ViewStats(s.app, s.uri, count(distinct s.ip))" +
-            " from Stats as s" +
-            " where s.timestamp >= :start" +
-            " and s.timestamp <= :end" +
-            " group by s.app, s.uri" +
-            " order by count(s.ip) desc")
+    @Query("SELECT new ru.practicum.ViewStats(s.application.appName, s.uri, COUNT(DISTINCT s.ip))" +
+            " FROM Stats s" +
+            " WHERE s.timestamp >= :start" +
+            " AND s.timestamp <= :end" +
+            " GROUP BY s.application.appName, s.uri" +
+            " ORDER BY COUNT(DISTINCT s.ip) DESC")
     List<ViewStats> findStatsAllWithUniqueIp(@Param("start") LocalDateTime start,
                                              @Param("end") LocalDateTime end);
 
-
-    @Query("select new ru.practicum.ViewStats(s.app, s.uri, count(distinct s.ip))" +
-            " from Stats as s" +
-            " where s.uri in :uris" +
-            " and s.timestamp >= :start" +
-            " and s.timestamp <= :end" +
-            " group by s.app, s.uri" +
-            " order by count(s.ip) desc")
+    @Query("SELECT new ru.practicum.ViewStats(s.application.appName, s.uri, COUNT(DISTINCT s.ip))" +
+            " FROM Stats s" +
+            " WHERE s.uri IN :uris" +
+            " AND s.timestamp >= :start" +
+            " AND s.timestamp <= :end" +
+            " GROUP BY s.application.appName, s.uri" +
+            " ORDER BY COUNT(DISTINCT s.ip) DESC")
     List<ViewStats> findStatsForUrisWithUniqueIp(@Param("uris") String[] uris,
                                                  @Param("start") LocalDateTime start,
                                                  @Param("end") LocalDateTime end);
 
-    @Query("select new ru.practicum.ViewStats(s.app, s.uri, count(s.ip))" +
-            " from Stats as s" +
-            " where s.uri in :uris" +
-            " and s.timestamp >= :start" +
-            " and s.timestamp <= :end" +
-            " group by s.app, s.uri" +
-            " order by count(s.ip) desc")
+    @Query("SELECT new ru.practicum.ViewStats(s.application.appName, s.uri, COUNT(s.ip))" +
+            " FROM Stats s" +
+            " WHERE s.uri IN :uris" +
+            " AND s.timestamp >= :start" +
+            " AND s.timestamp <= :end" +
+            " GROUP BY s.application.appName, s.uri" +
+            " ORDER BY COUNT(s.ip) DESC")
     List<ViewStats> findStatsForUris(@Param("uris") String[] uris,
                                      @Param("start") LocalDateTime start,
                                      @Param("end") LocalDateTime end);
+
 
 }

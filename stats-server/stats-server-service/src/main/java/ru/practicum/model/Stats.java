@@ -19,8 +19,9 @@ public class Stats {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    @Column(name = "app", nullable = false)
-    String app;
+    @ManyToOne
+    @JoinColumn(name = "app_id", referencedColumnName = "app_id")
+    private Application application;
 
     @Column(name = "uri", nullable = false)
     String uri;
@@ -31,5 +32,6 @@ public class Stats {
     @Column(name = "timestamp", nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime timestamp;
+
 
 }

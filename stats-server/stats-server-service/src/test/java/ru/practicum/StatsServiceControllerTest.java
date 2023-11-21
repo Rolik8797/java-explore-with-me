@@ -8,7 +8,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+
 import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,9 @@ public class StatsServiceControllerTest {
     @MockBean
     StatsService statsService;
 
+    @MockBean
+    ApplicationRepository applicationRepository;
+
     @Autowired
     private MockMvc mvc;
 
@@ -42,13 +47,13 @@ public class StatsServiceControllerTest {
             .build();
 
     private final ViewStats viewStats1 = ViewStats.builder()
-            .app("ewm-main-service")
+            .appName("ewm-main-service")
             .uri("/events/1")
             .hits(6)
             .build();
 
     private final ViewStats viewStats2 = ViewStats.builder()
-            .app("ewm-main-service")
+            .appName("ewm-main-service")
             .uri("/events")
             .hits(10)
             .build();
@@ -75,7 +80,7 @@ public class StatsServiceControllerTest {
         viewStatsList.add(viewStats1);
         viewStatsList.add(viewStats2);
 
-        when(statsService.get(anyString(), anyString(), any(), anyBoolean())).thenReturn(viewStatsList);
+        when(statsService.get(any(), any(), any(), anyBoolean())).thenReturn(viewStatsList);
 
         mvc.perform(get("/stats")
                 .param("start", "2022-09-06 11:00:23")
@@ -84,10 +89,10 @@ public class StatsServiceControllerTest {
                 .param("unique", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].app", is(viewStats1.getApp()), String.class))
+                .andExpect(jsonPath("$[0].appName", is(viewStats1.getAppName()), String.class))
                 .andExpect(jsonPath("$[0].uri", is(viewStats1.getUri()), String.class))
                 .andExpect(jsonPath("$[0].hits", is(viewStats1.getHits()), Integer.class))
-                .andExpect(jsonPath("$[1].app", is(viewStats2.getApp()), String.class))
+                .andExpect(jsonPath("$[1].appName", is(viewStats2.getAppName()), String.class))
                 .andExpect(jsonPath("$[1].uri", is(viewStats2.getUri()), String.class))
                 .andExpect(jsonPath("$[1].hits", is(viewStats2.getHits()), Integer.class));
     }

@@ -1,25 +1,23 @@
 package ru.practicum;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ViewStats {
 
-    private String app;
+    private String appName;
 
     private String uri;
 
     private Integer hits;
 
-    public ViewStats(String app, String uri, long hits) {
-        this.app = app;
+    public ViewStats(String appName, String uri, long hits) {
+        this.appName = appName;
         this.uri = uri;
         this.hits = Math.toIntExact(hits);
     }

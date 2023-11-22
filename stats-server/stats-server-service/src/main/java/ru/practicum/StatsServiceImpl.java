@@ -25,7 +25,7 @@ public class StatsServiceImpl implements ru.practicum.StatsService {
     @Override
     public EndpointHit create(EndpointHit endpointHit) {
 
-        String appName = endpointHit.getApp();
+        String appName = endpointHit.getAppName();
         Application application = applicationRepository.findByAppName(appName)
                 .orElseGet(() -> applicationRepository.save(new Application(appName)));
 
@@ -35,19 +35,24 @@ public class StatsServiceImpl implements ru.practicum.StatsService {
     }
 
     @Override
-    public List<ViewStats> get(LocalDateTime start, LocalDateTime end, String[] uris, Boolean unique) {
+    public List<ViewStats> get(String start, String end, String[] uris, Boolean unique) {
 
-        if (uris[0].equals("all")) {
+        LocalDateTime startTime = LocalDateTime.parse(start, formatter);
+        LocalDateTime endTime = LocalDateTime.parse(end, formatter);
+
+        if (uris[0].equals("all")) {  // Если uri изначально не был указан и ему присвоилось значение "all",
+            // то выгружвется вся статистика
+
             if (unique) {
-                return statsStorage.findStatsAllWithUniqueIp(start, end);
+                return statsStorage.findStatsAllWithUniqueIp(startTime, endTime);
             } else {
-                return statsStorage.findStatsAll(start, end);
+                return statsStorage.findStatsAll(startTime, endTime);
             }
-        } else {
+        } else {  // Иначе идёт выгрузка статистики согласно заданным uri
             if (unique) {
-                return statsStorage.findStatsForUrisWithUniqueIp(uris, start, end);
+                return statsStorage.findStatsForUrisWithUniqueIp(uris, startTime, endTime);
             } else {
-                return statsStorage.findStatsForUris(uris, start, end);
+                return statsStorage.findStatsForUris(uris, startTime, endTime);
             }
         }
     }

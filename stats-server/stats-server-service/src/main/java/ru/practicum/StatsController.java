@@ -8,7 +8,6 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.model.Application;
 
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -24,8 +23,8 @@ public class StatsController {
     }
 
     @GetMapping("/stats")
-    public List<ViewStats> get(@RequestParam(value = "start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
-                               @RequestParam(value = "end") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+    public List<ViewStats> get(@RequestParam(value = "start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String start,
+                               @RequestParam(value = "end") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String end,
                                @RequestParam(value = "uris") String[] uris,
                                @RequestParam(value = "unique") Boolean unique) {
         return statsService.get(start, end, uris, unique);

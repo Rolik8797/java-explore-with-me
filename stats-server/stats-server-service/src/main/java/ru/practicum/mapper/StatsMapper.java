@@ -22,7 +22,7 @@ public class StatsMapper {
                 ? LocalDateTime.parse(endpointHit.getTimestamp(), DATEFORMATTER)
                 : LocalDateTime.now();
 
-        String appName = endpointHit.getApp();
+
         String appNameFromHit = endpointHit.getAppName(); // Поменяйте на getAppName
         Application application = appNameFromHit != null ? new Application(appNameFromHit) : new Application();
 
@@ -40,7 +40,6 @@ public class StatsMapper {
 
         return EndpointHit.builder()
                 .id(stats.getId())
-                .app(stats.getApplication().getAppName())
                 .appName(stats.getApplication().getAppName())
                 .uri(stats.getUri())
                 .ip(stats.getIp())

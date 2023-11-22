@@ -15,8 +15,6 @@ import javax.validation.constraints.NotBlank;
 public class EndpointHit {
     Integer id;
 
-    @NotBlank(message = "Необходимо указать идентификатор сервиса")
-    String app;
 
     @NotBlank(message = "Необходимо указать URI")
     String uri;
@@ -29,4 +27,6 @@ public class EndpointHit {
 
     @NotBlank(message = "Необходимо указать название приложения")
     String appName;
+
+
 }

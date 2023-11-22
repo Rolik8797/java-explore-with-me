@@ -40,7 +40,7 @@ public class StatsServiceControllerTest {
 
     private final EndpointHit endpointHit = EndpointHit.builder()
             .id(1)
-            .app("ewm-main-service")
+            .appName("ewm-main-service")
             .uri("/events/1")
             .ip("192.163.0.1")
             .timestamp("2022-09-06 11:00:23")
@@ -68,7 +68,6 @@ public class StatsServiceControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(endpointHit.getId()), Integer.class))
-                .andExpect(jsonPath("$.app", is(endpointHit.getApp()), String.class))
                 .andExpect(jsonPath("$.uri", is(endpointHit.getUri()), String.class))
                 .andExpect(jsonPath("$.ip", is(endpointHit.getIp()), String.class))
                 .andExpect(jsonPath("$.timestamp", is(endpointHit.getTimestamp()), String.class));

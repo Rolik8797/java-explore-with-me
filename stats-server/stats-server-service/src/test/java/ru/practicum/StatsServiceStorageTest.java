@@ -35,7 +35,7 @@ public class StatsServiceStorageTest {
         entityManager.persist(application);
 
         EndpointHit endpointHit = EndpointHit.builder()
-                .app(application.getAppName())
+                .appName(application.getAppName())
                 .uri("/events/1")
                 .ip("192.163.0.1")
                 .timestamp("2022-09-06 11:00:23")
@@ -50,7 +50,7 @@ public class StatsServiceStorageTest {
 
         assertThat(stats.getId(), notNullValue());
         assertThat(stats.getId(), is(1));
-        assertThat(stats.getApplication().getAppName(), equalTo(endpointHit.getApp()));
+        assertThat(stats.getApplication().getAppName(), equalTo(endpointHit.getAppName()));
         assertThat(stats.getUri(), equalTo(endpointHit.getUri()));
         assertThat(stats.getIp(), equalTo(endpointHit.getIp()));
         assertThat(stats.getTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
@@ -63,28 +63,28 @@ public class StatsServiceStorageTest {
         entityManager.persist(application);
 
         EndpointHit endpointHit1 = EndpointHit.builder()
-                .app(application.getAppName())
+                .appName(application.getAppName())
                 .uri("/events/1")
                 .ip("192.163.0.1")
                 .timestamp("2022-09-06 11:00:23")
                 .build();
 
         EndpointHit endpointHit2 = EndpointHit.builder()
-                .app(application.getAppName())
+                .appName(application.getAppName())
                 .uri("/events")
                 .ip("192.163.0.1")
                 .timestamp("2023-02-06 11:00:23")
                 .build();
 
         EndpointHit endpointHit3 = EndpointHit.builder()
-                .app(application.getAppName())
+                .appName(application.getAppName())
                 .uri("/events/1")
                 .ip("192.163.0.1")
                 .timestamp("2023-03-06 11:00:23")
                 .build();
 
         EndpointHit endpointHit4 = EndpointHit.builder()
-                .app(application.getAppName())
+                .appName(application.getAppName())
                 .uri("/events/1")
                 .ip("192.163.0.2")
                 .timestamp("2023-05-06 11:00:23")

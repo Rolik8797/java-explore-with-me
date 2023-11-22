@@ -50,4 +50,9 @@ public class StatsController {
                 start, end, uris, unique);
         return statsClient.getStats(start, end, uris, unique);
     }
+
+    //start - Дата и время начала диапазона за который нужно выгрузить статистику (в формате "yyyy-MM-dd HH:mm:ss")
+    //end - Дата и время конца диапазона за который нужно выгрузить статистику (в формате "yyyy-MM-dd HH:mm:ss")
+    //uris - Список uri для которых нужно выгрузить статистику
+    //unique - Нужно ли учитывать только уникальные посещения (только с уникальным ip)
 }

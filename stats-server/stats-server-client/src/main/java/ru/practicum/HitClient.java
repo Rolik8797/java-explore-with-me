@@ -7,7 +7,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-
 @Component
 public class HitClient extends BaseClient {
 
@@ -22,7 +21,7 @@ public class HitClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> create(StatsDtoForSave endpointHit) {
+    public ResponseEntity<Object> create(EndpointHit endpointHit) {
         return post("", endpointHit);
     }
 }

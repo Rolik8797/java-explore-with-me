@@ -1,7 +1,8 @@
 package ru.practicum.model;
 
-import lombok.*;
-
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -13,12 +14,13 @@ import javax.persistence.*;
 public class Application {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "app_id", nullable = false)
+    @Column(name = "app", nullable = false, updatable = false)
     private Long id;
-    @Column(name = "app", nullable = false)
-    private String app;
 
-    public Application(String app) {
-        this.app = app;
+    @Column(name = "app_name", nullable = false)
+    private String name;
+
+    public Application(String name) {
+        this.name = name;
     }
 }

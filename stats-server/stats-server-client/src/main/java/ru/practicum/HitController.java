@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-
 import javax.validation.Valid;
 
 @Controller
@@ -25,7 +24,7 @@ public class HitController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> create(@Valid @RequestBody StatsDtoForSave endpointHit) {
+    public ResponseEntity<Object> create(@Valid @RequestBody EndpointHit endpointHit) {
         log.info("Сохранение в статистику запроса {}", endpointHit);
         return hitClient.create(endpointHit);
     }

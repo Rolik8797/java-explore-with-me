@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.model.Application;
-import ru.practicum.repository.ApplicationRepository;
 
 import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -14,14 +14,9 @@ import java.util.Optional;
 public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationRepository applicationRepository;
 
-    /**
-     * Выдать информацию о приложении по его названию из БД.
-     * @param appMame название приложения.
-     * @return приложение.
-     */
     @Override
-    public Optional<Application> getByName(String appMame) {
-        return applicationRepository.findByApp(appMame);
+    public Optional<Application> getByName(String appName) {
+        return applicationRepository.findByAppName(appName);
     }
 
     @Override

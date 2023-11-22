@@ -2,9 +2,13 @@ package ru.practicum;
 
 import java.util.List;
 
+
+import java.time.LocalDateTime;
+
+
 public interface StatsService {
 
-    EndpointHit create(EndpointHit endpointHit);
+    void save(StatsDtoForSave statDto);
 
-    List<ViewStats> get(String start, String end, String[] uris, Boolean unique);
+    List<StatsDtoForView> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique);
 }

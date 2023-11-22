@@ -22,7 +22,7 @@ public class HitClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> create(EndpointHit endpointHit) {
+    public ResponseEntity<Object> create(StatsDtoForSave endpointHit) {
         return post("", endpointHit);
     }
 }

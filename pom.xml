@@ -12,8 +12,8 @@
 
 	<name>Explore With Me</name>
 	<modules>
-		<module>stats-server</module>
-		<module>ewm-service</module>
+		<module>statistic-service</module>
+		<module>main-service</module>
 	</modules>
 
 	<groupId>ru.practicum</groupId>
@@ -25,15 +25,6 @@
 		<java.version>11</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-
-	<dependencies>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-	</dependencies>
 
 	<build>
 		<pluginManagement>

@@ -8,6 +8,7 @@ import ru.practicum.user.UserAdminService;
 import ru.practicum.user.dto.NewUserDto;
 import ru.practicum.user.dto.UserDto;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
@@ -28,7 +29,7 @@ public class UserAdminController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    UserDto create(@Validated @RequestBody NewUserDto newUserDto) {
+    UserDto create(@Valid @RequestBody NewUserDto newUserDto) {
         return userAdminService.create(newUserDto);
     }
 

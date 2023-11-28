@@ -21,6 +21,7 @@ import java.util.Set;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CompilationAdminServiceImp implements CompilationAdminService {
 
     private final CompilationRepository compilationRepository;
@@ -28,7 +29,6 @@ public class CompilationAdminServiceImp implements CompilationAdminService {
     private final EventRepository eventRepository;
 
     @Override
-    @Transactional
     public CompilationDto create(NewCompilationDto newCompilationDto) {
         Set<Event> events = new HashSet<>();
         if (newCompilationDto.getEvents() != null && !newCompilationDto.getEvents().isEmpty()) {
@@ -40,7 +40,6 @@ public class CompilationAdminServiceImp implements CompilationAdminService {
     }
 
     @Override
-    @Transactional
     public CompilationDto update(Long compId, UpdateCompilationRequest updateCompilationRequest) {
         Compilation newCompilation = findObjectInService.getCompilationById(compId);
         Set<Event> events;
@@ -59,7 +58,6 @@ public class CompilationAdminServiceImp implements CompilationAdminService {
     }
 
     @Override
-    @Transactional
     public void delete(Long compId) {
         findObjectInService.getCompilationById(compId);
         log.info("Получен запрос на удаление подборки событий по id: {}", compId);

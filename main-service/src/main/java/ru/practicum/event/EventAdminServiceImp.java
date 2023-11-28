@@ -8,15 +8,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
+import ru.practicum.event.dto.EventFilterDto;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.mapper.EventMapper;
+import ru.practicum.event.mapper.LocationMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.ForbiddenEventException;
 import ru.practicum.exception.ResourceNotFoundException;
-import ru.practicum.event.mapper.LocationMapper;
 import ru.practicum.utilities.DateFormatter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +31,7 @@ import static ru.practicum.event.EventPrivateServiceImp.getEventStateDeterming;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class EventAdminServiceImp implements EventAdminService {
 
     private final EventRepository eventRepository;
@@ -37,35 +39,29 @@ public class EventAdminServiceImp implements EventAdminService {
     private final ProcessingEvents processingEvents;
 
     @Override
-    @Transactional(readOnly = true)
-    public List<EventFullDto> get(List<Long> users, List<String> states, List<Long> categories,
-                                  String rangeStart, String rangeEnd, int from, int size, HttpServletRequest request) {
-        PageRequest page = PageRequest.of(from, size);
+    public List<EventFullDto> get(EventFilterDto filterDto, HttpServletRequest request) {
+        PageRequest page = PageRequest.of(filterDto.getFrom(), filterDto.getSize());
         List<Event> events;
         LocalDateTime newRangeStart = null;
-        if (rangeStart != null) {
-            newRangeStart = DateFormatter.formatDate(rangeStart);
+        if (filterDto.getRangeStart() != null) {
+            newRangeStart = DateFormatter.formatDate(filterDto.getRangeStart());
         }
         LocalDateTime newRangeEnd = null;
-        if (rangeEnd != null) {
-            newRangeEnd = DateFormatter.formatDate(rangeEnd);
+        if (filterDto.getRangeEnd() != null) {
+            newRangeEnd = DateFormatter.formatDate(filterDto.getRangeEnd());
         }
         log.info("Получен запрос от администратора на поиск событий");
-        if (states != null) {
-            events = eventRepository.findAllByAdmin(users, states, categories, newRangeStart, newRangeEnd, from, size);
-            List<Event> eventsAddViews = processingEvents.addViewsInEventsList(events, request);
-            List<Event> newEvents = processingEvents.confirmRequests(eventsAddViews);
-            return newEvents.stream().map(EventMapper::eventToEventFullDto).collect(Collectors.toList());
+        if (filterDto.getStates() != null) {
+            events = eventRepository.findAllByAdmin(filterDto.getUsers(), filterDto.getStates(), filterDto.getCategories(), newRangeStart, newRangeEnd, filterDto.getFrom(), filterDto.getSize());
         } else {
-            events = eventRepository.findAllByAdminAndState(users, null, categories, newRangeStart, newRangeEnd, page);
-            List<Event> eventsAddViews = processingEvents.addViewsInEventsList(events, request);
-            List<Event> newEvents = processingEvents.confirmRequests(eventsAddViews);
-            return newEvents.stream().map(EventMapper::eventToEventFullDto).collect(Collectors.toList());
+            events = eventRepository.findAllByAdminAndState(filterDto.getUsers(), null, filterDto.getCategories(), newRangeStart, newRangeEnd, page);
         }
+        List<Event> eventsAddViews = processingEvents.addViewsInEventsList(events, request);
+        List<Event> newEvents = processingEvents.confirmRequests(eventsAddViews);
+        return newEvents.stream().map(EventMapper::eventToEventFullDto).collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
     public EventFullDto update(Long eventId, UpdateEventAdminRequest updateEvent, HttpServletRequest request) {
         Event event = findObjectInService.getEventById(eventId);
         eventAvailability(event);

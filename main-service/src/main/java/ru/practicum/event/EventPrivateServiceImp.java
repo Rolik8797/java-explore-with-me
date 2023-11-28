@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class EventPrivateServiceImp implements EventPrivateService {
 
     private final EventRepository eventRepository;
@@ -46,7 +47,6 @@ public class EventPrivateServiceImp implements EventPrivateService {
     private final ProcessingEvents processingEvents;
 
     @Override
-    @Transactional(readOnly = true)
     public List<EventShortDto> get(Long userId, int from, int size, HttpServletRequest request) {
         findObjectInService.getUserById(userId);
         Pageable pageable = PageRequest.of(from, size);
@@ -58,7 +58,6 @@ public class EventPrivateServiceImp implements EventPrivateService {
     }
 
     @Override
-    @Transactional
     public EventFullDto create(Long userId, NewEventDto newEventDto) {
         NewEventDto tempNewEventDto = NewEventDto.builder()
                 .annotation(newEventDto.getAnnotation())
@@ -82,7 +81,6 @@ public class EventPrivateServiceImp implements EventPrivateService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public EventFullDto get(Long userId, Long eventId, HttpServletRequest request) {
         User user = findObjectInService.getUserById(userId);
         Event event = findObjectInService.getEventById(eventId);
@@ -93,7 +91,6 @@ public class EventPrivateServiceImp implements EventPrivateService {
     }
 
     @Override
-    @Transactional
     public EventFullDto update(Long userId, Long eventId, UpdateEventUserRequest updateEvent, HttpServletRequest request) {
         if (updateEvent.getEventDate() != null) {
             checkEventDate(DateFormatter.formatDate(updateEvent.getEventDate()));
@@ -144,7 +141,6 @@ public class EventPrivateServiceImp implements EventPrivateService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> getRequests(Long userId, Long eventId, HttpServletRequest request) {
         try {
             Event event = findObjectInService.getEventById(eventId);
@@ -159,7 +155,6 @@ public class EventPrivateServiceImp implements EventPrivateService {
     }
 
     @Override
-    @Transactional
     public EventRequestStatusUpdateResult updateStatus(Long userId, Long eventId,
                                                        EventRequestStatusUpdateRequest eventRequest,
                                                        HttpServletRequest request) {
@@ -193,12 +188,12 @@ public class EventPrivateServiceImp implements EventPrivateService {
                 if (event.getConfirmedRequests() <= event.getParticipantLimit()) {
                     requestList.setStatus(RequestStatus.CONFIRMED);
                     confirmedRequests.add(RequestMapper.requestToParticipationRequestDto(requestList));
-                    requestRepository.save(requestList);
+                    requestRepository.saveAll(requests);
                     event.setConfirmedRequests(event.getConfirmedRequests() + 1L);
                 } else {
                     requestList.setStatus(RequestStatus.REJECTED);
                     rejectedRequests.add(RequestMapper.requestToParticipationRequestDto(requestList));
-                    requestRepository.save(requestList);
+                    requestRepository.saveAll(requests);
                 }
             }
             eventRepository.save(event);
@@ -260,9 +255,9 @@ public class EventPrivateServiceImp implements EventPrivateService {
                         + " не получается ее одобрить, текущий статус " + requestList.getStatus());
             }
             requestList.setStatus(RequestStatus.REJECTED);
-            requestRepository.save(requestList);
             rejectedRequests.add(RequestMapper.requestToParticipationRequestDto(requestList));
         }
+        requestRepository.saveAll(requests);
         return rejectedRequests;
     }
 

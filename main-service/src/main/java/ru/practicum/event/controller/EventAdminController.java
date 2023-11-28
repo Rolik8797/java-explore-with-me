@@ -5,9 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.EventAdminService;
+import ru.practicum.event.dto.EventFilterDto;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
@@ -22,21 +25,33 @@ public class EventAdminController {
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    List<EventFullDto> get(@RequestParam(required = false) List<Long> users,
-                           @RequestParam(required = false) List<String> states,
-                           @RequestParam(required = false) List<Long> categories,
-                           @RequestParam(required = false) String rangeStart,
-                           @RequestParam(required = false) String rangeEnd,
-                           @PositiveOrZero @RequestParam(defaultValue = "0", required = false) Integer from,
-                           @Positive @RequestParam(defaultValue = "10", required = false) Integer size,
-                           HttpServletRequest request) {
+    public List<EventFullDto> get(
+            @RequestParam(required = false) List<Long> users,
+            @RequestParam(required = false) List<String> states,
+            @RequestParam(required = false) List<Long> categories,
+            @RequestParam(required = false) String rangeStart,
+            @RequestParam(required = false) String rangeEnd,
+            @PositiveOrZero @RequestParam(defaultValue = "0", required = false) Integer from,
+            @Positive @RequestParam(defaultValue = "10", required = false) Integer size,
+            HttpServletRequest request) {
 
-        return eventAdminService.get(users, states, categories, rangeStart, rangeEnd, from, size, request);
+        EventFilterDto filterDto = EventFilterDto.builder()
+                .users(users)
+                .states(states)
+                .categories(categories)
+                .rangeStart(rangeStart)
+                .rangeEnd(rangeEnd)
+                .from(from)
+                .size(size)
+                .build();
+
+        return eventAdminService.get(filterDto, request);
     }
+
 
     @PatchMapping("/{eventId}")
     EventFullDto update(@PathVariable Long eventId,
-                        @Validated @RequestBody UpdateEventAdminRequest updateEventAdminRequest,
+                        @Valid @RequestBody UpdateEventAdminRequest updateEventAdminRequest,
                         HttpServletRequest request) {
         return eventAdminService.update(eventId, updateEventAdminRequest, request);
     }

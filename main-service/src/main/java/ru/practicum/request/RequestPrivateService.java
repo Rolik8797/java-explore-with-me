@@ -13,4 +13,6 @@ public interface RequestPrivateService {
     ParticipationRequestDto create(Long userId, Long eventId, HttpServletRequest request);
 
     ParticipationRequestDto update(Long userId, Long requestId, HttpServletRequest request);
+
+
 }

@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RequestPrivateServiceImp implements RequestPrivateService {
 
     private final RequestRepository requestRepository;
@@ -36,7 +37,6 @@ public class RequestPrivateServiceImp implements RequestPrivateService {
     private final ProcessingEvents processingEvents;
 
     @Override
-    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> get(Long id) {
         User user = findObjectInService.getUserById(id);
         List<Request> requests = requestRepository.findAllByRequesterIs(user);
@@ -46,7 +46,6 @@ public class RequestPrivateServiceImp implements RequestPrivateService {
     }
 
     @Override
-    @Transactional
     public ParticipationRequestDto create(Long userId, Long eventId, HttpServletRequest httpServletRequest) {
         User user = findObjectInService.getUserById(userId);
         Event event = findObjectInService.getEventById(eventId);
@@ -88,7 +87,6 @@ public class RequestPrivateServiceImp implements RequestPrivateService {
     }
 
     @Override
-    @Transactional
     public ParticipationRequestDto update(Long userId, Long requestId, HttpServletRequest httpServletRequest) {
         User user = findObjectInService.getUserById(userId);
         Request request = findObjectInService.getRequestById(requestId);
@@ -114,6 +112,8 @@ public class RequestPrivateServiceImp implements RequestPrivateService {
             throw new BadRequestException("Ошибка в формировании запроса");
         }
     }
+
+
 
     private void checkEventUser(Long userId, Long eventId) {
         Optional<Request> request = requestRepository.findByRequesterIdAndEventId(userId, eventId);

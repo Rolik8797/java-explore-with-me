@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class EventPublicServiceImp implements EventPublicService {
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private final EventRepository eventRepository;
@@ -35,7 +36,6 @@ public class EventPublicServiceImp implements EventPublicService {
     private String appName;
 
     @Override
-    @Transactional(readOnly = true)
     public List<EventShortDto> get(String text, List<Long> categories, Boolean paid, String rangeStart,
                                    String rangeEnd, boolean onlyAvailable, String sort,
                                    Integer from, Integer size, HttpServletRequest request) {
@@ -64,7 +64,6 @@ public class EventPublicServiceImp implements EventPublicService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public EventFullDto get(Long id, HttpServletRequest request) {
         EndpointHitDto endpointHitDto = EndpointHitDto.builder()
                 .app(appName)

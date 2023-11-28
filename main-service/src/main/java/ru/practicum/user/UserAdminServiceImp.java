@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserAdminServiceImp implements UserAdminService {
 
     private final UserRepository userRepository;
@@ -30,7 +31,6 @@ public class UserAdminServiceImp implements UserAdminService {
 
 
     @Override
-    @Transactional(readOnly = true)
     public List<UserDto> get(List<Long> ids, int from, int size) {
         Pageable pageable = PageRequest.of(from, size);
         if (ids == null) {
@@ -48,7 +48,6 @@ public class UserAdminServiceImp implements UserAdminService {
 
 
     @Override
-    @Transactional
     public UserDto create(NewUserDto newUserDto) {
         User user = UserMapper.newUserRequestToUser(newUserDto);
         try {
@@ -63,7 +62,6 @@ public class UserAdminServiceImp implements UserAdminService {
     }
 
     @Override
-    @Transactional
     public void delete(Long id) {
         User user = findObjectInService.getUserById(id);
         log.info("Получен запрос на удаление пользователя с id: {}", id);

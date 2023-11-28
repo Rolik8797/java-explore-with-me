@@ -16,13 +16,13 @@ import ru.practicum.exception.ConflictNameCategoryException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CategoryAdminServiceImp implements CategoryAdminService {
 
     private final CategoryRepository categoryRepository;
     private final FindObjectInService findObjectInService;
 
     @Override
-    @Transactional
     public CategoryDto create(NewCategoryDto newCategoryDto) {
         Category category = CategoryMapper.newCategoryDtoToCategory(newCategoryDto);
         log.info("Получен запрос на добавление категории с названием: {}", newCategoryDto.getName());
@@ -31,7 +31,6 @@ public class CategoryAdminServiceImp implements CategoryAdminService {
     }
 
     @Override
-    @Transactional
     public CategoryDto update(Long id, CategoryDto categoryDto) {
         Category category = findObjectInService.getCategoryById(id);
         if (!categoryDto.getName().equals(category.getName())) {
@@ -43,7 +42,6 @@ public class CategoryAdminServiceImp implements CategoryAdminService {
     }
 
     @Override
-    @Transactional
     public void delete(Long id) {
         Category category = findObjectInService.getCategoryById(id);
         if (findObjectInService.isRelatedEvent(category)) {

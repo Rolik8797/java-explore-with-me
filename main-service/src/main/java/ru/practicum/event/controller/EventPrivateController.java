@@ -14,6 +14,7 @@ import ru.practicum.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.request.dto.ParticipationRequestDto;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
@@ -37,7 +38,7 @@ public class EventPrivateController {
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     EventFullDto create(@PathVariable Long userId,
-                        @Validated @RequestBody NewEventDto newEventDto) {
+                        @Valid @RequestBody NewEventDto newEventDto) {
         return eventPrivateService.create(userId, newEventDto);
     }
 
@@ -51,7 +52,7 @@ public class EventPrivateController {
     @PatchMapping("/{eventId}")
     EventFullDto update(@PathVariable Long userId,
                         @PathVariable Long eventId,
-                        @Validated @RequestBody UpdateEventUserRequest updateEventUserRequest,
+                        @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest,
                         HttpServletRequest request) {
         return eventPrivateService.update(userId, eventId, updateEventUserRequest, request);
     }

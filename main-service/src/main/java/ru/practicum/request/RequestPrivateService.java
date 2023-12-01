@@ -14,5 +14,6 @@ public interface RequestPrivateService {
 
     ParticipationRequestDto update(Long userId, Long requestId, HttpServletRequest request);
 
+    List<ParticipationRequestDto> getRequests(Long userId, Long eventId, HttpServletRequest request);
 
 }

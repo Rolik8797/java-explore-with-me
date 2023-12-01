@@ -12,6 +12,7 @@ import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.ConflictRequestException;
+import ru.practicum.exception.ForbiddenEventException;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
@@ -28,7 +29,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class RequestPrivateServiceImp implements RequestPrivateService {
 
     private final RequestRepository requestRepository;
@@ -37,6 +37,7 @@ public class RequestPrivateServiceImp implements RequestPrivateService {
     private final ProcessingEvents processingEvents;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> get(Long id) {
         User user = findObjectInService.getUserById(id);
         List<Request> requests = requestRepository.findAllByRequesterIs(user);
@@ -46,6 +47,7 @@ public class RequestPrivateServiceImp implements RequestPrivateService {
     }
 
     @Override
+    @Transactional
     public ParticipationRequestDto create(Long userId, Long eventId, HttpServletRequest httpServletRequest) {
         User user = findObjectInService.getUserById(userId);
         Event event = findObjectInService.getEventById(eventId);
@@ -87,6 +89,7 @@ public class RequestPrivateServiceImp implements RequestPrivateService {
     }
 
     @Override
+    @Transactional
     public ParticipationRequestDto update(Long userId, Long requestId, HttpServletRequest httpServletRequest) {
         User user = findObjectInService.getUserById(userId);
         Request request = findObjectInService.getRequestById(requestId);
@@ -113,7 +116,26 @@ public class RequestPrivateServiceImp implements RequestPrivateService {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<ParticipationRequestDto> getRequests(Long userId, Long eventId, HttpServletRequest request) {
+        try {
+            Event event = findObjectInService.getEventById(eventId);
+            User user = findObjectInService.getUserById(userId);
+            checkOwnerEvent(event, user);
+            List<Request> requests = requestRepository.findAllByEvent(event);
+            log.info("Получен приватный запрос на получение всех запросов для события с id: {} для пользователя с id: {}", eventId, userId);
+            return requests.stream().map(RequestMapper::requestToParticipationRequestDto).collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new BadRequestException("Некорректный запрос получения списка запросов на участие в текущем событии");
+        }
+    }
 
+    private void checkOwnerEvent(Event event, User user) {
+        if (!Objects.equals(event.getInitiator().getId(), user.getId())) {
+            throw new ForbiddenEventException("Событие с id:" + event.getId() + " не принадлежит пользователю с id:" + user.getId());
+        }
+    }
 
     private void checkEventUser(Long userId, Long eventId) {
         Optional<Request> request = requestRepository.findByRequesterIdAndEventId(userId, eventId);

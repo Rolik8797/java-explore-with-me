@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
 public class EventPrivateServiceImp implements EventPrivateService {
 
     private final EventRepository eventRepository;
@@ -47,6 +46,7 @@ public class EventPrivateServiceImp implements EventPrivateService {
     private final ProcessingEvents processingEvents;
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> get(Long userId, int from, int size, HttpServletRequest request) {
         findObjectInService.getUserById(userId);
         Pageable pageable = PageRequest.of(from, size);
@@ -58,6 +58,7 @@ public class EventPrivateServiceImp implements EventPrivateService {
     }
 
     @Override
+    @Transactional
     public EventFullDto create(Long userId, NewEventDto newEventDto) {
         NewEventDto tempNewEventDto = NewEventDto.builder()
                 .annotation(newEventDto.getAnnotation())
@@ -81,6 +82,7 @@ public class EventPrivateServiceImp implements EventPrivateService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EventFullDto get(Long userId, Long eventId, HttpServletRequest request) {
         User user = findObjectInService.getUserById(userId);
         Event event = findObjectInService.getEventById(eventId);
@@ -91,6 +93,7 @@ public class EventPrivateServiceImp implements EventPrivateService {
     }
 
     @Override
+    @Transactional
     public EventFullDto update(Long userId, Long eventId, UpdateEventUserRequest updateEvent, HttpServletRequest request) {
         if (updateEvent.getEventDate() != null) {
             checkEventDate(DateFormatter.formatDate(updateEvent.getEventDate()));
@@ -140,21 +143,9 @@ public class EventPrivateServiceImp implements EventPrivateService {
         return EventMapper.eventToEventFullDto(eventRepository.save(event));
     }
 
-    @Override
-    public List<ParticipationRequestDto> getRequests(Long userId, Long eventId, HttpServletRequest request) {
-        try {
-            Event event = findObjectInService.getEventById(eventId);
-            User user = findObjectInService.getUserById(userId);
-            checkOwnerEvent(event, user);
-            List<Request> requests = requestRepository.findAllByEvent(event);
-            log.info("Получен приватный запрос на получение всех запросов для события с id: {} для пользователя с id: {}", eventId, userId);
-            return requests.stream().map(RequestMapper::requestToParticipationRequestDto).collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new BadRequestException("Некорректный запрос получения списка запросов на участие в текущем событии");
-        }
-    }
 
     @Override
+    @Transactional
     public EventRequestStatusUpdateResult updateStatus(Long userId, Long eventId,
                                                        EventRequestStatusUpdateRequest eventRequest,
                                                        HttpServletRequest request) {

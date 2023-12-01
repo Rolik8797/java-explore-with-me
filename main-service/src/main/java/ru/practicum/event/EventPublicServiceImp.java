@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class EventPublicServiceImp implements EventPublicService {
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private final EventRepository eventRepository;

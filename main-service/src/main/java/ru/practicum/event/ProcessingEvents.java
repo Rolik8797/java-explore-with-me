@@ -3,7 +3,7 @@ package ru.practicum.event;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.client.StatsClient;
-import ru.practicum.common.dto.ViewStats;
+import ru.practicum.common.dto.ViewStatsDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.request.RequestStatus;
 import ru.practicum.request.model.Request;
@@ -30,15 +30,15 @@ public class ProcessingEvents {
         List<String> uris = events.stream().map(e -> request.getRequestURI() + "/" + e.getId()).collect(Collectors.toList());
         LocalDateTime start = findStartDateTime(events);
         LocalDateTime end = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        List<ViewStats> stats = statsClient.getStats(start, end, uris, true);
+        List<ViewStatsDto> stats = statsClient.getStats(start, end, uris, true);
         fillEventViews(events, stats, request.getRequestURI());
         return events;
     }
 
-    private void fillEventViews(List<Event> events, List<ViewStats> stats, String baseUri) {
+    private void fillEventViews(List<Event> events, List<ViewStatsDto> stats, String baseUri) {
         if (!stats.isEmpty()) {
             Map<String, Long> statsByUri = stats.stream().collect(Collectors.groupingBy(
-                    ViewStats::getUri, Collectors.summingLong(ViewStats::getHits)));
+                    ViewStatsDto::getUri, Collectors.summingLong(ViewStatsDto::getHits)));
             events.forEach(e -> {
                 Long views = statsByUri.get(baseUri + "/" + e.getId());
                 if (views != null) {
@@ -75,8 +75,8 @@ public class ProcessingEvents {
     public long searchViews(Event event, HttpServletRequest request) {
         LocalDateTime date = LocalDateTime.of(LocalDate.of(1900, 1, 1), LocalTime.of(0, 0, 1));
         LocalDateTime start = event.getPublishedOn() == null ? date : event.getPublishedOn();
-        List<ViewStats> stats = statsClient.getStats(start, LocalDateTime.now(), List.of(request.getRequestURI()), true);
-        return stats.stream().map(ViewStats::getHits).reduce(0L, Long::sum);
+        List<ViewStatsDto> stats = statsClient.getStats(start, LocalDateTime.now(), List.of(request.getRequestURI()), true);
+        return stats.stream().map(ViewStatsDto::getHits).reduce(0L, Long::sum);
     }
 
     private LocalDateTime findStartDateTime(List<Event> events) {

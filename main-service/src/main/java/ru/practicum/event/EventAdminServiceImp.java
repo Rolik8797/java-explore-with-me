@@ -31,7 +31,6 @@ import static ru.practicum.event.EventPrivateServiceImp.getEventStateDeterming;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class EventAdminServiceImp implements EventAdminService {
 
     private final EventRepository eventRepository;
@@ -39,6 +38,7 @@ public class EventAdminServiceImp implements EventAdminService {
     private final ProcessingEvents processingEvents;
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventFullDto> get(EventFilterDto filterDto, HttpServletRequest request) {
         PageRequest page = PageRequest.of(filterDto.getFrom(), filterDto.getSize());
         List<Event> events;
@@ -62,6 +62,7 @@ public class EventAdminServiceImp implements EventAdminService {
     }
 
     @Override
+    @Transactional
     public EventFullDto update(Long eventId, UpdateEventAdminRequest updateEvent, HttpServletRequest request) {
         Event event = findObjectInService.getEventById(eventId);
         eventAvailability(event);

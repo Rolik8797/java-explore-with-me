@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.practicum.common.dto.EndpointHitDto;
-import ru.practicum.common.dto.ViewStats;
+import ru.practicum.common.dto.ViewStatsDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,7 +23,7 @@ public class StatsClient {
         this.client = WebClient.create(serverUrl);
     }
 
-    public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+    public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         return client.get()
                 .uri(uriBuilder -> uriBuilder.path("/stats")
                         .queryParam("start", start.format(formatter))
@@ -32,7 +32,7 @@ public class StatsClient {
                         .queryParam("unique", unique)
                         .build())
                 .retrieve()
-                .bodyToFlux(ViewStats.class)
+                .bodyToFlux(ViewStatsDto.class)
                 .collectList()
                 .block();
     }
